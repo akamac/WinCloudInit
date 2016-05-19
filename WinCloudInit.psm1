@@ -30,6 +30,8 @@ function Set-WinCloudInit {
 }
 
 function Start-WinCloudInit {
+	[CmdletBinding()]
+	param()
 	$Log = Join-Path C:\Windows\Temp "WinCloudInit-$((Get-Date).ToString('MM-dd-yy')).log"
 
 	"Starting WinCloudInit $(Get-Date)" >> $Log
