@@ -5,7 +5,7 @@ param(
 
 Write-Verbose 'Extending existing volumes'
 'rescan' | diskpart
-(Get-CimInstance -Class Win32_Volume -Property Name).Name -match ':' | % {
+(Get-CimInstance -Class Win32_Volume -Property Name -Verbose:$false).Name -match ':' | % {
 	"select volume $_",'extend' | diskpart
 }
 
@@ -14,14 +14,17 @@ Write-Verbose 'Changing drive letter for CDROM'
 'select volume 0','assign letter=Z' | diskpart
 
 Write-Verbose 'Formatting and mounting additional disks'
-$DiskDrives = Get-CimInstance -Class Win32_DiskDrive -Property Index,SerialNumber,Partitions
-$LogicalDisks = Get-CimInstance Win32_LogicalDisk -Property DeviceID
+$DiskProperties = 'Index','SerialNumber','Partitions','SCSIBus','SCSILogicalUnit'
+$DiskDrives = Get-CimInstance -Class Win32_DiskDrive -Property $DiskProperties -Verbose:$false
+$LogicalDisks = Get-CimInstance Win32_LogicalDisk -Property DeviceID -Verbose:$false
 $i = 0
 $UnassignedLetters = [char[]](68..90) | ? { $_ -notin $LogicalDisks.DeviceID.TrimEnd(':') }
-$Config.HDD | % {
-	$HDD = $DiskDrives | ? SerialNumber -eq $_.Uuid
-	if (-not $HDD.Partitions) {
-		$Index = $HDD.Index
+foreach ($HDD in $Config.HDD) {
+	$Bus, $Lun = $HDD.DeviceNode -replace 'scsi' -split ':'
+	$HardDisk = $DiskDrives |
+	? { $_.SerialNumber -eq $HDD.Uuid -or ($_.SCSIBus -eq $Bus -and $_.SCSILogicalUnit -eq $Lun)}
+	$Index = $HardDisk.Index
+	if (-not $HardDisk.Partitions) {
 		$MountPoint = if ($_.MountPoint) { $_.MountPoint } else { $UnassignedLetters[$i] + ':'; $i++ }
 		$Label = if ($_.Label) { $_.Label } else { 'Data' }
 		$ClusterSizeKB = if ($_.ClusterSizeKB) { "$($_.ClusterSizeKB)K" } else { '4K' }
@@ -34,5 +37,9 @@ $Config.HDD | % {
 		'create partition primary',
 		"format label='$Label' fs=ntfs unit=$ClusterSizeKB quick",
 		"assign mount='$MountPoint'" | diskpart
+	} else {
+		# disks are offline after sysprep ('SAN POLICY=OnlineAll')
+		"select disk $Index",
+		'online disk' | diskpart
 	}
 }

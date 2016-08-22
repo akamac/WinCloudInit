@@ -4,7 +4,7 @@ param(
 )
 
 if ($Config.Sysprep) {
-	$Unattend = switch -Wildcard ((Get-CimInstance -class Win32_OperatingSystem).Caption) {
+	$Unattend = switch -Wildcard ((Get-CimInstance -Class Win32_OperatingSystem -Verbose:$false).Caption) {
 		'*2012 R2*' { 'unattend_2K12R2.xml' }
 		'*2008 R2*' { 'unattend_2K8R2.xml' }
 		default { throw 'OS unsupported' }
