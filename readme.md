@@ -27,13 +27,17 @@ Currently the only supported config source is cloud-config.json file stored on f
   "HostName": "WINCLOUDINIT",
   "HDD": [
     {
-      "Capacity": 50
+      "Capacity": 50,
+      "DeviceNode": "scsi0:0",
+      "Uuid": "6000c2913a13b84ecf0ba5000ddc71d2"
     },
     {
       "Capacity": 100,
       "Label": "Data",
       "MountPoint": "C:\data",
-      "ClusterSizeKB": 64
+      "ClusterSizeKB": 64,
+      "DeviceNode": "scsi1:0",
+      "Uuid": "6000c29d238336928f301e14245e80b4"
     }
   ],
   "NIC": [
@@ -92,6 +96,8 @@ Currently the only supported config source is cloud-config.json file stored on f
   ]
 }
 ```
+*DeviceNode HDD field is required on Hyper-V platform*  
+*Uuid HDD field is required on VMware platform*  
 
 To install the module:
 - download from GitHub and place into 'C:\Program Files\WindowsPowerShell\Modules' 
