@@ -1,6 +1,6 @@
 ﻿@{
 	RootModule = 'WinCloudInit.psm1'
-	ModuleVersion = '1.1.1'
+	ModuleVersion = '1.1.2'
 	GUID = '5f24b005-82e2-4d16-8470-51c1851f5562'
 	Author = 'Alexey Miasoedov'
 	CompanyName = 'Intermedia'
