@@ -11,8 +11,15 @@ $Computer = [ADSI]"WinNT://$env:COMPUTERNAME,computer"
 }
 
 @($Config.Users) -ne $null | % {
-	$User = $Computer.Create('User', $_.Name)
-	$User.SetPassword($_.Password)
+    if ($_.OldName) {
+        $User = [ADSI]"WinNT://$env:COMPUTERNAME/$($_.OldName),user"
+        $User.Rename($_.Name) # PSBase
+    } else {
+	    $User = $Computer.Create('User', $_.Name)
+    }
+    if ($_.Password) {
+	    $User.SetPassword($_.Password)
+    }
 	$User.SetInfo()
 	@($_.Groups) -ne $null | % {
 		try {

@@ -29,14 +29,6 @@
             </Identification>
         </component>
     </settings>
-    <settings pass="generalize">
-        <component name="Microsoft-Windows-Security-SPP" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35"
-                   language="neutral" versionScope="nonSxS"
-                   xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <SkipRearm>1</SkipRearm>
-        </component>
-    </settings>
     <settings pass="oobeSystem">
         <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35"
                    language="neutral" versionScope="nonSxS"
@@ -70,6 +62,14 @@
             <SystemLocale>en-US</SystemLocale>
             <UILanguage>en-US</UILanguage>
             <UserLocale>en-US</UserLocale>
+        </component>
+    </settings>
+    <settings pass="generalize">
+        <component name="Microsoft-Windows-Security-SPP" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35"
+                   language="neutral" versionScope="nonSxS"
+                   xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <SkipRearm>1</SkipRearm>
         </component>
     </settings>
     <cpi:offlineImage cpi:source="" xmlns:cpi="urn:schemas-microsoft-com:cpi"/>

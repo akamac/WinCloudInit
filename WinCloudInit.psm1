@@ -1,17 +1,16 @@
 function Set-WinCloudInit {
 	param(
 		[switch] $Enabled,
-		[switch] $ResetState,
+        [ValidateRange(0,99)]
+		[int] $State,
 		[pscredential] $Credential
 	)
 
-	if ($ResetState) {
-		Set-Content $PSScriptRoot\state ''
-	}
+	Set-Content $PSScriptRoot\state $State
 
 	if ($PSBoundParameters.ContainsKey('Enabled')) {
 		if ($Enabled) {
-			Set-WinCloudInit -Enabled:$false -ResetState
+			Set-WinCloudInit -Enabled:$false
 			if (-not $Credential) {
 				$Credential = Get-Credential -UserName $env:USERNAME -Message 'Specify credential'
 			}
@@ -35,23 +34,29 @@ function Start-WinCloudInit {
 	$Log = Join-Path C:\Windows\Temp "WinCloudInit-$((Get-Date).ToString('MM-dd-yy')).log"
 
 	"Starting WinCloudInit $(Get-Date)" >> $Log
-	'Searching for cloud-config.json (floppy/cdrom)' >> $Log
+	'Searching for cloud-config.json on floppy/cdrom' >> $Log
+    $Found = $false
 	2,5 | % {
 		if ($ConfigDrive = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType = $_" -Property DeviceID) {
 			$ConfigPath = Join-Path $ConfigDrive.DeviceID 'cloud-config.json'
-			if (Test-Path $ConfigPath) {
-				$Config = Get-Content $ConfigPath -Raw | ConvertFrom-Json |
-				Add-Member -MemberType NoteProperty -Name _Path -Value (Split-Path $ConfigPath) -TypeName string -Force -PassThru
-				"Found in $ConfigPath" >> $Log
-				return
-			}
+			if (Test-Path $ConfigPath) { $Found = $ConfigPath; return }
 		}
 	}
-	if (-not $Config) {
+	if (-not $Found) {
+        'Searching for cloud-config.json on local drive' >> $Log
+        $LocalPath = 'C:\cloud-config\cloud-config.json'
+        if (Test-Path $LocalPath) { $Found = $LocalPath }
+	}
+
+	if ($Found) {
+        "Found in $Found" >> $Log
+        $Config = Get-Content $Found -Raw | ConvertFrom-Json |
+		Add-Member -MemberType NoteProperty -Name _Path -Value (Split-Path $Found) -TypeName string -Force -PassThru
+	} else {
 		$Msg = 'No config source found'
 		$Msg >> $Log
 		throw $Msg
-	}
+    }
 
 	# state file contains last executed plugin number (for reboot handling)
 	'Reading <state> file' >> $Log

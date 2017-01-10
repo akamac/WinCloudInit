@@ -1,6 +1,6 @@
 ﻿@{
 	RootModule = 'WinCloudInit.psm1'
-	ModuleVersion = '1.1.2'
+	ModuleVersion = '1.2.0'
 	GUID = '5f24b005-82e2-4d16-8470-51c1851f5562'
 	Author = 'Alexey Miasoedov'
 	CompanyName = 'Intermedia'
@@ -10,9 +10,11 @@
 	FunctionsToExport = 'Set-WinCloudInit','Start-WinCloudInit'
 	FileList = 
 		'WinCloudInit.psm1',
-		'plugins\01-sysprep.ps1',
+	    'plugins\01-reboot.ps1',	
+        'plugins\02-sysprep.ps1',
 		'plugins\04-network.ps1',
 		'plugins\08-hostname.ps1',
+        'plugins\09-user.ps1',
 		'plugins\10-posh.ps1',
 		'plugins\11-cert.ps1',
 		'plugins\12-winrm.ps1',
@@ -20,7 +22,6 @@
 		'plugins\20-firewall.ps1',
 		'plugins\24-activation.ps1',
 		'plugins\28-disk.ps1',
-		'plugins\32-user.ps1',
 		'plugins\makecert.exe',
 		'plugins\unattend_2K12R2.xml',
 		'plugins\unattend_2K8R2.xml'

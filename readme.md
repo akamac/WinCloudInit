@@ -1,15 +1,16 @@
 # WinCloudInit
 *CloudInit for Windows*
 
-WinCloudInit provides a framework for early guest (Windows) initialization 
+WinCloudInit provides a framework for early guest (Windows) initialization
 similar to [CloudInit](http://cloudinit.readthedocs.io/en/latest/).
-In VMware and Hyper-V environments it replaces guest customization with 
+In VMware and Hyper-V environments it replaces guest customization with
 more flexible and extendable mechanism.
-Compared to [CloudbaseInit](https://cloudbase.it/cloudbase-init/) it's 
+Compared to [CloudbaseInit](https://cloudbase.it/cloudbase-init/) it's
 written purely on PowerShell.
 
 List of bundled plugins:
-- 01-sysprep.ps1
+- 01-reboot.ps1
+- 02-sysprep.ps1
 - 04-network.ps1
 - 08-hostname.ps1
 - 10-posh.ps1
@@ -21,7 +22,7 @@ List of bundled plugins:
 - 28-disk.ps1
 - 32-user.ps1
 
-Currently the only supported config source is cloud-config.json file stored on floppy/cdrom:
+Currently the only supported config source is cloud-config.json file stored on floppy/cdrom or C:\cloud-config folder:
 ```
 {
   "HostName": "WINCLOUDINIT",
@@ -68,7 +69,10 @@ Currently the only supported config source is cloud-config.json file stored on f
   "ProductKey": "D2N9P-3P6X9-2R39C-7RTCD-MDVJX",
   "WinRM": {
     "Https": true,
-    "Certificate": "812FF641630C82CFC1104597409DB086FA43E480"
+    "Certificate": "812FF641630C82CFC1114597409DB086FA43E480",
+    "UserMapping": {
+        "automation": "5CBF402EA2AA8481FB7677705471E84C32A9833B"
+      }
   },
   "ExecutionPolicy": "Restricted",
   "RDP": false,
@@ -77,19 +81,23 @@ Currently the only supported config source is cloud-config.json file stored on f
   },
   "Certificates": [
     {
-      "FileName": "wincloudinit-winrm.pfx",
-      "Store": "LocalMachine\\My",
+      "File": "wincloudinit-winrm.pfx",
+      "Store": [ "LocalMachine\\My" ],
       "Password": "certpass"
     },
     {
-      "FileName": "GeoTrust Global CA.cer",
-      "Store": "LocalMachine\\CA"
+      "File": "GeoTrust Global CA.cer",
+      "Store": [ "LocalMachine\\CA" ]
+    },
+    {
+      "Url": "https://www.server.com/automation.cer",
+      "Store": [ "LocalMachine\\Root", "LocalMachine\\TrustedPeople" ]
     }
   ],
   "Groups": [ "PowerUsers" ],
   "Users": [
     {
-      "Name": "superuser",
+      "Name": "automation",
       "Password": "c0mplek$P@$$",
       "Groups": [ "PowerUsers", "Administrators" ]
     }
@@ -100,12 +108,12 @@ Currently the only supported config source is cloud-config.json file stored on f
 *Uuid HDD field is required on VMware platform*  
 
 To install the module:
-- download from GitHub and place into 'C:\Program Files\WindowsPowerShell\Modules' 
+- download from GitHub and place into 'C:\Program Files\WindowsPowerShell\Modules'
 (requires system-wide location)
 - OR grab it from PowerShell Gallery with `Install-Module WinCloudInit -Scope AllUsers`
 
-To enable WinCloudInit upon system reboot run `Set-WinCloudInit -Enabled`, you will 
-be prompted for Administrator credentials (after sysprep module will switch to SYSTEM 
+To enable WinCloudInit upon system reboot run `Set-WinCloudInit -Enabled`, you will
+be prompted for Administrator credentials (after sysprep module will switch to SYSTEM
 account).
 
 Log is stored in C:\Windows\Temp\WinCloudInit-#date#.log
@@ -122,12 +130,12 @@ param(
 	$Config
 )
 ```
-Inject the neccessary configuration data in cloud-config.json so it is exposed 
-to your source through `$Config` variable. *Prepend the name 
-with double-digit number* according to the order when the plugin is intended 
+Inject the neccessary configuration data in cloud-config.json so it is exposed
+to your source through `$Config` variable. *Prepend the name
+with double-digit number* according to the order when the plugin is intended
 to be run and put it into the *plugins* folder.  
-If your plugin is going to reboot the system, prior to restart send **'reboot'** 
-string to stdout so the module can suspend execution of the next plugin 
-and resume after system has been restarted. To handle reboots the module keeps 
+If your plugin is going to reboot the system, prior to restart send **'reboot'**
+string to stdout so the module can suspend execution of the next plugin
+and resume after system has been restarted. To handle reboots the module keeps
 a state file in the module directory where it stores a current execution step.
 To reset the state run `Set-WinCloudInit -ResetState`
