@@ -35,10 +35,15 @@ Write-Verbose 'Configuring networking'
 	if ($_.Gw) {
 		Write-Verbose "Setting gateway $($_.Gw)"
 		$NetAdapterConfig.SetGateways($_.Gw)
-		if ($Config.DNS) {
-			Write-Verbose "Configuring DNS servers $($Config.DNS)"
-			$NetAdapterConfig.SetDNSServerSearchOrder($Config.DNS)
+		if ($Config.DNS.Servers) {
+			Write-Verbose "Configuring DNS servers $($Config.DNS.Servers)"
+			$NetAdapterConfig.SetDNSServerSearchOrder($Config.DNS.Servers)
 		}
 	}
+    if ($Config.DNS.DomainSearch) {
+        Write-Verbose "Setting domain search list $($Config.DNS.DomainSearch)"
+        $DNSSuffixSearch = @($Config.Domain.Name) + $Config.DNS.DomainSearch -ne $null | Select -Unique
+        ([wmiclass]'Win32_NetworkAdapterConfiguration').SetDNSSuffixSearchOrder($DNSSuffixSearch)
+    }
 	$i++
 }

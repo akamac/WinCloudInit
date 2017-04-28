@@ -130,7 +130,7 @@ param(
 	$Config
 )
 ```
-Inject the neccessary configuration data in cloud-config.json so it is exposed
+Inject the necessary configuration data in cloud-config.json so it is exposed
 to your source through `$Config` variable. *Prepend the name
 with double-digit number* according to the order when the plugin is intended
 to be run and put it into the *plugins* folder.  
