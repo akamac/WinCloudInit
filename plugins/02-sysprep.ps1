@@ -16,7 +16,8 @@ if ($Config.Sysprep) {
 	}
 
 	(Select-Xml @Param -XPath '//ns:ComputerName').Node.InnerXml = $Config.HostName
-	(Select-Xml @Param -XPath '//ns:AdministratorPassword/ns:Value').Node.InnerXml = $Config.Sysprep.AdminPassword
+	(Select-Xml @Param -XPath '//ns:AdministratorPassword/ns:Value').Node.InnerXml =
+		-join (33..126 -ne 94 | Get-Random -Count 16 | % {[char]$_}) #$Config.Sysprep.AdminPassword
 	(Select-Xml @Param -XPath '//ns:RegisteredOrganization').Node.InnerXml = $Config.Sysprep.Org
 	(Select-Xml @Param -XPath '//ns:RegisteredOwner').Node.InnerXml = $Config.Sysprep.Owner
 	(Select-Xml @Param -XPath '//ns:TimeZone').Node.InnerXml = $Config.Sysprep.TimeZone

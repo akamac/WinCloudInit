@@ -44,7 +44,7 @@ function Start-WinCloudInit {
 	}
 	if (-not $Found) {
         'Searching for cloud-config.json on local drive' >> $Log
-        $LocalPath = 'C:\cloud-config\cloud-config.json'
+        $LocalPath = 'C:\WinCloudInit\cloud-config.json'
         if (Test-Path $LocalPath) { $Found = $LocalPath }
 	}
 
@@ -52,6 +52,8 @@ function Start-WinCloudInit {
         "Found in $Found" >> $Log
         $Config = Get-Content $Found -Raw | ConvertFrom-Json |
 		Add-Member -MemberType NoteProperty -Name _Path -Value (Split-Path $Found) -TypeName string -Force -PassThru
+        mkdir C:\WinCloudInit\ -ea SilentlyContinue
+        Copy-Item $Found "C:\WinCloudInit\_$Found"
 	} else {
 		$Msg = 'No config source found'
 		$Msg >> $Log

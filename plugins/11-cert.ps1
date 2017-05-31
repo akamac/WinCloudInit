@@ -13,11 +13,13 @@ param(
         Join-Path $Config._Path $_.File
     }
 	
-	$Password = $_.Password
     $Cert = switch -Regex ($CertificatePath) {
 		'(pfx|p12)$' {
+			Push-Location $PSScriptRoot\openssl
+			$Password = $_.Password -join '' | cmd '/c openssl enc -base64 -d | openssl rsautl -inkey private.pem -decrypt'
 			# keyStorageFlag = 18 : 'MachineKeySet' - 2,'Exportable' - 4,'PersistKeySet' - 16
 			New-Object Security.Cryptography.X509Certificates.X509Certificate2($CertificatePath,$Password,18)
+			Pop-Location
 		}
 		'(cer|crt)$' {
 			New-Object Security.Cryptography.X509Certificates.X509Certificate2($CertificatePath)
