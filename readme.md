@@ -59,7 +59,15 @@ Currently the only supported config source is cloud-config.json file stored on f
       "Mac": "00:50:56:96:1d:28"
     }
   ],
-  "DNS": [ "8.8.8.8" ],
+  "DNS": {
+    "DomainSearch": [
+      "domain.local",
+      "company.net"
+    ],
+    "Servers": [
+      "8.8.8.8"
+    ]
+  },
   "Sysprep": {
     "Org": "Company",
     "Owner": "SysAdmin",
@@ -97,8 +105,27 @@ Currently the only supported config source is cloud-config.json file stored on f
   "Groups": [ "PowerUsers" ],
   "Users": [
     {
+      "Name": "admin",
+      "OldName": "Administrator",
+      "Password": [
+        "PV+j7zZWctl3HvccGzJUetBblhV5qOjhaPdlvr/FFSZEWBmyCoYCB6A0V0iYyqIU",
+        "4JrU7pljAnzvccXK1eh4PD4yr6S9wj/7bBynxsYGH2YlYI4uDwv5sFUP8p2kwNAd",
+        "qafVuuItZFWzNDeg/Ta/w+UJbXjsXn7+PfAc5wo1sMX9tgUV7G6FJh7kVwzxl7Ax",
+        "/Oegu0a94fUMSZJaU8cJJ4JFUHpopmtSkOQyVxykHPKYCX8njdaabnRwhzc0jugU",
+        "+l5pCx0ljpEJbkVtfbOHij5IZFD0AKsoWJg1Uzmfjs7hwcFQmDaXUajBK3Fq5XNs",
+        "WiQIKnXzk5ppTxJEL66KtQ=="
+        ]
+    },
+    {
       "Name": "automation",
-      "Password": "c0mplek$P@$$",
+      "Password": [
+        "PV+j7zZWctl3HvccGzJUetBblhV5qOjhaPdlvr/FFSZEWBmyCoYCB6A0V0iYyqIU",
+        "4JrU7pljAnzvccXK1eh4PD4yr6S9wj/7bBynxsYGH2YlYI4uDwv5sFUP8p2kwNAd",
+        "qafVuuItZFWzNDeg/Ta/w+UJbXjsXn7+PfAc5wo1sMX9tgUV7G6FJh7kVwzxl7Ax",
+        "/Oegu0a94fUMSZJaU8cJJ4JFUHpopmtSkOQyVxykHPKYCX8njdaabnRwhzc0jugU",
+        "+l5pCx0ljpEJbkVtfbOHij5IZFD0AKsoWJg1Uzmfjs7hwcFQmDaXUajBK3Fq5XNs",
+        "WiQIKnXzk5ppTxJEL66KtQ=="
+        ],
       "Groups": [ "PowerUsers", "Administrators" ]
     }
   ]
@@ -115,6 +142,9 @@ To install the module:
 To enable WinCloudInit upon system reboot run `Set-WinCloudInit -Enabled`, you will
 be prompted for Administrator credentials (after sysprep module will switch to SYSTEM
 account).
+
+Put unencrypted private RSA key (private.pem) to module openssl subfolder so that 
+WinCloudInit can decrypt user/certificate passwords, supplied via cloud-config.json  
 
 Log is stored in C:\Windows\Temp\WinCloudInit-#date#.log
 

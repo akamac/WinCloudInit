@@ -18,7 +18,10 @@ $Computer = [ADSI]"WinNT://$env:COMPUTERNAME,computer"
 	    $User = $Computer.Create('User', $_.Name)
     }
     if ($_.Password) {
-	    $User.SetPassword($_.Password)
+        Push-Location $PSScriptRoot\openssl
+        $pass = $_.Password -join '' | cmd '/c openssl enc -base64 -d | openssl rsautl -inkey private.pem -decrypt'
+	    $User.SetPassword($pass)
+        Pop-Location
     }
 	$User.SetInfo()
 	@($_.Groups) -ne $null | % {
