@@ -1,12 +1,12 @@
 [CmdletBinding()]
 param(
-	$Config
+    $Config
 )
 
 Write-Verbose 'Extending existing volumes'
 'rescan' | diskpart
 (Get-CimInstance -Class Win32_Volume -Property Name -Verbose:$false).Name -match ':' | % {
-	"select volume $_",'extend' | diskpart
+    "select volume $_",'extend' | diskpart
 }
 
 # config source here! check plugin execution order
@@ -20,26 +20,26 @@ $LogicalDisks = Get-CimInstance Win32_LogicalDisk -Property DeviceID -Verbose:$f
 $i = 0
 $UnassignedLetters = [char[]](68..90) | ? { $_ -notin $LogicalDisks.DeviceID.TrimEnd(':') }
 foreach ($HDD in $Config.HDD) {
-	$Port, $Lun = $HDD.DeviceNode -replace 'scsi' -split ':'
-	$HardDisk = $DiskDrives |
-	? { ($_.SerialNumber -and $_.SerialNumber -eq $HDD.Uuid) -or ($_.SCSIPort -eq $Port -and $_.SCSILogicalUnit -eq $Lun)}
-	$Index = $HardDisk.Index
-	if (-not $HardDisk.Partitions) {
-		$MountPoint = if ($HDD.MountPoint) { $HDD.MountPoint } else { $UnassignedLetters[$i] + ':'; $i++ }
-		$Label = if ($HDD.Label) { $HDD.Label } else { 'Data' }
-		$ClusterSizeKB = if ($HDD.ClusterSizeKB) { "$($HDD.ClusterSizeKB)K" } else { '4K' }
-		mkdir $MountPoint -ea SilentlyContinue
-		Write-Verbose "Index: $Index, MountPoint: $MountPoint, Label: $Label, Cluster Size: $ClusterSizeKB"
-		"select disk $Index",
-		'attributes disk clear readonly',
-		'online disk',
-		'convert gpt',
-		'create partition primary',
-		"format label='$Label' fs=ntfs unit=$ClusterSizeKB quick",
-		"assign mount='$MountPoint'" | diskpart
-	} else {
-		# disks are offline after sysprep ('SAN POLICY=OnlineAll')
-		"select disk $Index",
-		'online disk' | diskpart
-	}
+    $Port, $Lun = $HDD.DeviceNode -replace 'scsi' -split ':'
+    $HardDisk = $DiskDrives |
+    ? { ($_.SerialNumber -and $_.SerialNumber -eq $HDD.Uuid) -or ($_.SCSIPort -eq $Port -and $_.SCSILogicalUnit -eq $Lun)}
+    $Index = $HardDisk.Index
+    if (-not $HardDisk.Partitions) {
+        $MountPoint = if ($HDD.MountPoint) { $HDD.MountPoint } else { $UnassignedLetters[$i] + ':'; $i++ }
+        $Label = if ($HDD.Label) { $HDD.Label } else { 'Data' }
+        $ClusterSizeKB = if ($HDD.ClusterSizeKB) { "$($HDD.ClusterSizeKB)K" } else { '4K' }
+        mkdir $MountPoint -ea SilentlyContinue
+        Write-Verbose "Index: $Index, MountPoint: $MountPoint, Label: $Label, Cluster Size: $ClusterSizeKB"
+        "select disk $Index",
+        'attributes disk clear readonly',
+        'online disk',
+        'convert gpt',
+        'create partition primary',
+        "format label='$Label' fs=ntfs unit=$ClusterSizeKB quick",
+        "assign mount='$MountPoint'" | diskpart
+    } else {
+        # disks are offline after sysprep ('SAN POLICY=OnlineAll')
+        "select disk $Index",
+        'online disk' | diskpart
+    }
 }
