@@ -37,7 +37,7 @@
             <UserAccounts>
                 <AdministratorPassword>
                     <Value>ADMIN_PASSWORD</Value>
-                    <PlainText>true</PlainText>
+                    <PlainText>false</PlainText>
                 </AdministratorPassword>
             </UserAccounts>
             <RegisteredOrganization>Org</RegisteredOrganization>

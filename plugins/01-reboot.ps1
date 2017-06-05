@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-	$Config
+    $Config
 )
 
 Sleep 60

@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-	$Config
+    $Config
 )
 
 function ConvertTo-SubnetMask ([int]$SubnetMaskLength) {
@@ -14,36 +14,36 @@ function ConvertTo-SubnetMask ([int]$SubnetMaskLength) {
 
 Write-Verbose 'Configuring networking'
 @($Config.NIC) -ne $null | % -Begin {
-	$i = 0
-	Write-Verbose 'Disabling teredo/6to4/isatap'
-	netsh int teredo set state disabled
-	netsh int 6to4 set state disabled
-	netsh int isatap set state disabled
+    $i = 0
+    Write-Verbose 'Disabling teredo/6to4/isatap'
+    netsh int teredo set state disabled
+    netsh int 6to4 set state disabled
+    netsh int isatap set state disabled
 } {
-	Write-Verbose "Network adapter $($_.Mac)"
-	$NetAdapter = Get-WmiObject -Class Win32_NetworkAdapter -Filter "MACAddress = '$($_.Mac)'"
-	$ConnectionName = if ($_.Name) {$_.Name} else { "Connection$i" }
-	$NetAdapter.NetConnectionID = $ConnectionName
-	Write-Verbose "Setting connection name to $ConnectionName"
-	$NetAdapter.Put()
-	$NetAdapterConfig = Get-WmiObject Win32_NetworkAdapterConfiguration -Filter "Index = '$($NetAdapter.DeviceID)'"
-	Write-Verbose "Configuring ip addresses $($_.Ip)"
-	$NetAdapterConfig.EnableStatic(
-		@($_.Ip.ForEach({ $_.Split('/')[0] })),
-		@($_.Ip.ForEach({ ConvertTo-SubnetMask ($_.Split('/')[1]) }))
-	)
-	if ($_.Gw) {
-		Write-Verbose "Setting gateway $($_.Gw)"
-		$NetAdapterConfig.SetGateways($_.Gw)
-		if ($Config.DNS.Servers) {
-			Write-Verbose "Configuring DNS servers $($Config.DNS.Servers)"
-			$NetAdapterConfig.SetDNSServerSearchOrder($Config.DNS.Servers)
-		}
-	}
+    Write-Verbose "Network adapter $($_.Mac)"
+    $NetAdapter = Get-WmiObject -Class Win32_NetworkAdapter -Filter "MACAddress = '$($_.Mac)'"
+    $ConnectionName = if ($_.Name) {$_.Name} else { "Connection$i" }
+    $NetAdapter.NetConnectionID = $ConnectionName
+    Write-Verbose "Setting connection name to $ConnectionName"
+    $NetAdapter.Put()
+    $NetAdapterConfig = Get-WmiObject Win32_NetworkAdapterConfiguration -Filter "Index = '$($NetAdapter.DeviceID)'"
+    Write-Verbose "Configuring ip addresses $($_.Ip)"
+    $NetAdapterConfig.EnableStatic(
+        @($_.Ip.ForEach({ $_.Split('/')[0] })),
+        @($_.Ip.ForEach({ ConvertTo-SubnetMask ($_.Split('/')[1]) }))
+    )
+    if ($_.Gw) {
+        Write-Verbose "Setting gateway $($_.Gw)"
+        $NetAdapterConfig.SetGateways($_.Gw)
+        if ($Config.DNS.Servers) {
+            Write-Verbose "Configuring DNS servers $($Config.DNS.Servers)"
+            $NetAdapterConfig.SetDNSServerSearchOrder($Config.DNS.Servers)
+        }
+    }
     if ($Config.DNS.DomainSearch) {
         Write-Verbose "Setting domain search list $($Config.DNS.DomainSearch)"
         $DNSSuffixSearch = @($Config.Domain.Name) + $Config.DNS.DomainSearch -ne $null | Select -Unique
         ([wmiclass]'Win32_NetworkAdapterConfiguration').SetDNSSuffixSearchOrder($DNSSuffixSearch)
     }
-	$i++
+    $i++
 }
