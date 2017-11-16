@@ -16,7 +16,7 @@ if ($Config.Sysprep) {
     }
     
     $pass = -join (33..126 -ne 94 | Get-Random -Count 16 | % {[char]$_})
-    $Bytes = [System.Text.Encoding]::ASCII.GetBytes($pass)
+    $Bytes = [System.Text.Encoding]::Unicode.GetBytes($pass + 'AdministratorPassword')
     $SysprepPassword = [Convert]::ToBase64String($Bytes)
     (Select-Xml @Param -XPath '//ns:AdministratorPassword/ns:Value').Node.InnerXml = $SysprepPassword
 

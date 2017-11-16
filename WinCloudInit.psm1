@@ -53,7 +53,7 @@ function Start-WinCloudInit {
         $Config = Get-Content $Found -Raw | ConvertFrom-Json |
         Add-Member -MemberType NoteProperty -Name _Path -Value (Split-Path $Found) -TypeName string -Force -PassThru
         mkdir C:\WinCloudInit\ -ea SilentlyContinue
-        Copy-Item $Found "C:\WinCloudInit\_cloud-config.json"
+        Copy-Item $Found "C:\WinCloudInit\_cloud-config.json" -Force
     } else {
         $Msg = 'No config source found'
         $Msg >> $Log
