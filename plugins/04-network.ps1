@@ -27,6 +27,8 @@ Write-Verbose 'Configuring networking'
     Write-Verbose "Setting connection name to $ConnectionName"
     $NetAdapter.Put()
     $NetAdapterConfig = Get-WmiObject Win32_NetworkAdapterConfiguration -Filter "Index = '$($NetAdapter.DeviceID)'"
+    Write-Verbose 'Disabling NetBIOS'
+    $NetAdapterConfig.SetTcpipNetbios(2)
     Write-Verbose "Configuring ip addresses $($_.Ip)"
     $NetAdapterConfig.EnableStatic(
         @($_.Ip.ForEach({ $_.Split('/')[0] })),
