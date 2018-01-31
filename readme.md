@@ -193,4 +193,7 @@ To reset the state run `Set-WinCloudInit -ResetState`
 `echo 'password' | openssl rsautl -inkey public.pem -pubin -encrypt | openssl enc -base64 > encrypted`  
 
 ### decrypt data
+#### windows
+`cat encrypted | cmd '/c openssl enc -d -base64 | openssl rsautl -inkey private.pem -decrypt'`  
+#### linux
 `cat encrypted | openssl enc -d -base64 | openssl rsautl -inkey private.pem -decrypt`  
