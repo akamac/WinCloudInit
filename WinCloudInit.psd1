@@ -12,8 +12,8 @@
         'WinCloudInit.psm1',
         'plugins\01-reboot.ps1',	
         'plugins\02-sysprep.ps1',
+        'plugins\03-hostname.ps1',
         'plugins\04-network.ps1',
-        'plugins\08-hostname.ps1',
         'plugins\09-user.ps1',
         'plugins\10-posh.ps1',
         'plugins\11-cert.ps1',
@@ -24,7 +24,10 @@
         'plugins\28-disk.ps1',
         'plugins\makecert.exe',
         'plugins\unattend_2K12R2.xml',
-        'plugins\unattend_2K8R2.xml'
+        'plugins\unattend_2K8R2.xml',
+        'plugins\openssl\libeay32.dll',
+        'plugins\openssl\openssl.exe',
+        'plugins\openssl\ssleay32.dll'
     PrivateData = @{
         PSData = @{
             Tags = @('Cloud-Init','CloudInit','Windows')
