@@ -3,9 +3,9 @@ param(
     $Config
 )
 
-Write-Verbose 'Extending existing volumes'
 'rescan' | diskpart
 (Get-CimInstance -Class Win32_Volume -Property Name -Verbose:$false).Name -match ':' | % {
+    Write-Verbose "Extending volume $_"
     "select volume $_",'extend' | diskpart
 }
 

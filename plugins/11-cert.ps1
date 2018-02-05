@@ -7,6 +7,7 @@ param(
 @($Config.Certificates) -ne $null | % {
     $CertificatePath = if (($Uri = [uri]$_.Url).Scheme) {
         $tmp = Join-Path ([System.IO.Path]::GetTempPath()) $Uri.Segments[-1]
+        Write-Verbose "Fetching certificate from $Uri"
         Invoke-WebRequest -Uri $Uri -OutFile $tmp
         $tmp
     } else {
