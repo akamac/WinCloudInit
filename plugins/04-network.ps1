@@ -41,7 +41,7 @@ Write-Verbose 'Configuring networking'
             Write-Verbose "Configuring DNS servers $($Config.DNS.Servers)"
             #$NetAdapterConfig.SetDNSServerSearchOrder($Config.DNS.Servers)
             $Config.DNS.Servers | % -Begin { $idx = 0 } {
-                netsh interface ipv4 add dnsservers name="$ConnectionName" address=$_ index=$idx validate=false
+                netsh interface ipv4 add dnsservers name="$ConnectionName" address=$_ index=$idx # validate=false
                 $idx++
             }
         }
