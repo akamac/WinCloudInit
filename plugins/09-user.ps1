@@ -17,8 +17,14 @@ $Computer = [ADSI]"WinNT://$env:COMPUTERNAME,computer"
         Write-Verbose "Renaming user $($_.OldName) to $($_.Name)"
         $User.Rename($_.Name) # PSBase
     } else {
-        Write-Verbose "Creating user $($_.Name)"
-        $User = $Computer.Create('User', $_.Name)
+        Write-Verbose "Checking if user $($_.Name) exists"
+        $UserName = $_.Name
+        try {
+            $User = [ADSI]"WinNT://$env:COMPUTERNAME/$($_.Name),user"
+        } catch {
+            Write-Verbose "Creating user $UserName"
+            $User = $Computer.Create('User', $UserName)
+        }
     }
     if ($_.Password) {
         Push-Location $PSScriptRoot\openssl
