@@ -1,6 +1,6 @@
 ﻿@{
     RootModule = 'WinCloudInit.psm1'
-    ModuleVersion = '1.3.8'
+    ModuleVersion = '1.3.9'
     GUID = '5f24b005-82e2-4d16-8470-51c1851f5562'
     Author = 'Alexey Miasoedov'
     CompanyName = 'Intermedia'
@@ -23,6 +23,7 @@
         'plugins\24-activation.ps1',
         'plugins\28-disk.ps1',
         'plugins\makecert.exe',
+        'plugins\unattend_2K16.xml',
         'plugins\unattend_2K12R2.xml',
         'plugins\unattend_2K8R2.xml',
         'plugins\openssl\libeay32.dll',
