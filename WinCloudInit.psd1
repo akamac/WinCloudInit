@@ -1,4 +1,4 @@
-﻿@{
+@{
     RootModule = 'WinCloudInit.psm1'
     ModuleVersion = '1.3.9'
     GUID = '5f24b005-82e2-4d16-8470-51c1851f5562'
@@ -10,7 +10,7 @@
     FunctionsToExport = 'Set-WinCloudInit','Start-WinCloudInit'
     FileList = 
         'WinCloudInit.psm1',
-        'plugins\01-reboot.ps1',	
+        'plugins\01-reboot.ps1',    
         'plugins\02-sysprep.ps1',
         'plugins\03-hostname.ps1',
         'plugins\04-network.ps1',
