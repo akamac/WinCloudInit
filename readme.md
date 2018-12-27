@@ -157,6 +157,8 @@ Log is stored in C:\Windows\Temp\WinCloudInit-#date#.log
 The module targets PowerShell v4 installations and has been tested on:
 - Windows Server 2008 R2
 - Windows Server 2012 R2
+- Windows Server 2016
+- Windows Server 2019
 
 ## For developers
 To develop a new plugin write a PowerShell script that starts with:
