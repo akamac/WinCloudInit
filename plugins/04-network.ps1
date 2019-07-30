@@ -39,11 +39,7 @@ Write-Verbose 'Configuring networking'
         $NetAdapterConfig.SetGateways($_.Gw)
         if ($Config.DNS.Servers) {
             Write-Verbose "Configuring DNS servers $($Config.DNS.Servers)"
-            #$NetAdapterConfig.SetDNSServerSearchOrder($Config.DNS.Servers)
-            $Config.DNS.Servers | % -Begin { $idx = 0 } {
-                netsh interface ipv4 add dnsservers name="$ConnectionName" address=$_ index=$idx # validate=false
-                $idx++
-            }
+            $NetAdapterConfig.SetDNSServerSearchOrder($Config.DNS.Servers)
         }
     }
     if ($Config.DNS.DomainSearch) {
